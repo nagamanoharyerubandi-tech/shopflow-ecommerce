@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | ShopFlow Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+                <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+                    <h4 class="fw-bold mb-0">{{ title }}</h4>
+                    <a href="{% url 'admin_dashboard:category_list' %}" class="btn btn-outline-secondary btn-sm">Cancel</a>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Category Name *</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Bootstrap Icon Class</label>
+                        {{ form.icon }}
+                        <small class="text-muted d-block mt-1">e.g. <code>bi-laptop</code>, <code>bi-bag-heart</code>, <code>bi-book</code>, <code>bi-house-heart</code></small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Description</label>
+                        {{ form.description }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Banner / Image</label>
+                        {{ form.image }}
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check">
+                            {{ form.is_featured }}
+                            <label class="form-check-label fw-semibold small" for="{{ form.is_featured.id_for_label }}">
+                                Feature this category on Homepage
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-warning fw-bold px-4">Save Category</button>
+                        <a href="{% url 'admin_dashboard:category_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

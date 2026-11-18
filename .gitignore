@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Environment Variables
+.env
+!.env.example
+
+# Database
+*.sqlite3
+
+# Static / Media uploads
+/media/products/*
+!/media/products/.gitkeep
+/media/avatars/*
+!/media/avatars/.gitkeep
+/staticfiles/
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

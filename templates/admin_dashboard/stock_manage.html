@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Inventory Stock | ShopFlow Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="fw-bold mb-0"><i class="bi bi-boxes me-2 text-primary"></i>Stock Inventory Manager</h2>
+            <small class="text-muted">Batch update warehouse stock quantities for all products in one step</small>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'admin_dashboard:product_list' %}" class="btn btn-outline-primary btn-sm">
+                Products List
+            </a>
+            <a href="{% url 'admin_dashboard:home' %}" class="btn btn-outline-secondary btn-sm">
+                &larr; Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Form for Batch Stock Update -->
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+                <span class="fw-bold">All Products ({{ products.count }})</span>
+                <button type="submit" class="btn btn-warning fw-bold btn-sm shadow-sm px-4">
+                    <i class="bi bi-check2-circle me-1"></i>Save All Inventory Changes
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">Product Name</th>
+                                <th>Category</th>
+                                <th>Current Price</th>
+                                <th>Status</th>
+                                <th style="width: 180px;">Available Stock Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in products %}
+                            <tr class="{% if p.stock == 0 %}table-danger table-opacity-10{% elif p.stock <= 5 %}table-warning table-opacity-10{% endif %}">
+                                <td class="ps-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="{{ p.display_image }}" alt="{{ p.name }}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px;">
+                                        <div>
+                                            <strong class="d-block text-dark small">{{ p.name }}</strong>
+                                            <small class="text-muted">{{ p.brand|default:"No brand" }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="small">{{ p.category.name }}</td>
+                                <td class="fw-semibold">₹{{ p.current_price|floatformat:2 }}</td>
+                                <td>
+                                    {% if p.stock == 0 %}
+                                        <span class="badge bg-danger">Out of Stock</span>
+                                    {% elif p.stock <= 5 %}
+                                        <span class="badge bg-warning text-dark">Low Stock ({{ p.stock }})</span>
+                                    {% else %}
+                                        <span class="badge bg-success">In Stock</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text"><i class="bi bi-box-seam"></i></span>
+                                        <input type="number" 
+                                               name="stock_{{ p.id }}" 
+                                               class="form-control text-center fw-bold" 
+                                               value="{{ p.stock }}" 
+                                               min="0" 
+                                               max="9999">
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">No products found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white p-3 text-end border-top">
+                <button type="submit" class="btn btn-warning fw-bold shadow-sm px-4">
+                    <i class="bi bi-check2-circle me-1"></i>Save All Inventory Changes
+                </button>
+            </div>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

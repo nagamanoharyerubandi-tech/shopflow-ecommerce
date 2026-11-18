@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Order #{{ order.order_number }} | ShopFlow Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <h2 class="fw-bold mb-0">Order #{{ order.order_number }}</h2>
+                <span class="badge {{ order.status_badge_class }} fs-6">{{ order.status }}</span>
+            </div>
+            <small class="text-muted">Placed on {{ order.created_at|date:"d M Y, h:i A" }}</small>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'orders:order_invoice' order.order_number %}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-printer me-1"></i>Print Invoice
+            </a>
+            <a href="{% url 'admin_dashboard:order_list' %}" class="btn btn-outline-primary btn-sm">
+                &larr; Back to Orders List
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        
+        <!-- Left: Status Update Form -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <h5 class="fw-bold mb-3 border-bottom pb-2">
+                    <i class="bi bi-gear-fill me-2 text-primary"></i>Update Order Status
+                </h5>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Order Fulfillment Status</label>
+                        {{ form.status }}
+                        <small class="text-muted d-block mt-1">Pending &rarr; Processing &rarr; Shipped &rarr; Delivered (or Cancelled)</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Payment Status</label>
+                        {{ form.payment_status }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Courier Tracking Number</label>
+                        {{ form.tracking_number }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">Internal Admin Notes</label>
+                        {{ form.notes }}
+                    </div>
+
+                    <button type="submit" class="btn btn-warning w-100 fw-bold py-2 shadow-sm">
+                        <i class="bi bi-save me-1"></i>Save Status Changes
+                    </button>
+                </form>
+            </div>
+
+            <!-- Customer & Shipping Snapshot -->
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <h5 class="fw-bold mb-3 border-bottom pb-2">
+                    <i class="bi bi-person-lines-fill me-2 text-primary"></i>Customer Shipping Address
+                </h5>
+                <h6 class="fw-bold mb-1">{{ order.full_name }}</h6>
+                <p class="text-muted small mb-1">{{ order.address_line_1 }}</p>
+                {% if order.address_line_2 %}
+                    <p class="text-muted small mb-1">{{ order.address_line_2 }}</p>
+                {% endif %}
+                <p class="text-muted small mb-2">{{ order.city }}, {{ order.state }} - <strong>{{ order.postal_code }}</strong>, {{ order.country }}</p>
+                
+                <div class="border-top pt-2 small text-muted">
+                    <p class="mb-1"><i class="bi bi-telephone me-2"></i>{{ order.phone }}</p>
+                    <p class="mb-1"><i class="bi bi-envelope me-2"></i>{{ order.email }}</p>
+                    <p class="mb-0"><i class="bi bi-person me-2"></i>Username: <strong>{{ order.user.username }}</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Items & Financials -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-white border-bottom p-3">
+                    <h5 class="fw-bold mb-0">Ordered Items ({{ order.items.count }})</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3">Item</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-end">Price</th>
+                                    <th class="text-end pe-3">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items.all %}
+                                <tr>
+                                    <td class="ps-3">
+                                        <div class="d-flex align-items-center gap-3">
+                                            {% if item.product_image %}
+                                                <img src="{{ item.product_image }}" alt="{{ item.product_name }}" style="width: 48px; height: 48px; object-fit: cover; border-radius: 6px;">
+                                            {% endif %}
+                                            <div>
+                                                {% if item.product %}
+                                                    <a href="{{ item.product.get_absolute_url }}" target="_blank" class="text-dark fw-semibold text-decoration-none small">
+                                                        {{ item.product_name }}
+                                                    </a>
+                                                    <small class="text-muted d-block">Current Stock: {{ item.product.stock }}</small>
+                                                {% else %}
+                                                    <span class="text-dark fw-semibold small">{{ item.product_name }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center fw-bold">{{ item.quantity }}</td>
+                                    <td class="text-end text-muted">₹{{ item.price|floatformat:2 }}</td>
+                                    <td class="text-end pe-3 fw-bold">₹{{ item.total_price|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="border-top">
+                                <tr>
+                                    <td colspan="3" class="text-end pt-3">Items Subtotal:</td>
+                                    <td class="text-end pe-3 pt-3 fw-semibold">₹{{ order.subtotal|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-end py-1">Delivery Fee:</td>
+                                    <td class="text-end pe-3 py-1 text-success fw-semibold">
+                                        {% if order.shipping_fee == 0 %}FREE{% else %}₹{{ order.shipping_fee|floatformat:2 }}{% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-end py-1">Taxes (5%):</td>
+                                    <td class="text-end pe-3 py-1 fw-semibold">₹{{ order.tax|floatformat:2 }}</td>
+                                </tr>
+                                {% if order.discount > 0 %}
+                                <tr>
+                                    <td colspan="3" class="text-end py-1 text-success">Discount Savings:</td>
+                                    <td class="text-end pe-3 py-1 text-success fw-semibold">- ₹{{ order.discount|floatformat:2 }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td colspan="3" class="text-end pb-3 fs-5 fw-bold text-dark">Total Amount:</td>
+                                    <td class="text-end pe-3 pb-3 fs-5 fw-bold text-primary">₹{{ order.grand_total|floatformat:2 }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {% if order.cancellation_reason %}
+                <div class="card border-danger border-opacity-25 bg-danger bg-opacity-10 shadow-sm rounded-3 p-3 mb-4">
+                    <h6 class="fw-bold text-danger mb-1"><i class="bi bi-x-octagon-fill me-1"></i>Cancellation Reason:</h6>
+                    <p class="mb-0 text-dark small">{{ order.cancellation_reason }}</p>
+                </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

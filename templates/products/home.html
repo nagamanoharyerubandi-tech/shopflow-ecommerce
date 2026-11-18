@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopFlow | Best Deals in Electronics, Fashion, Home & More{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 mt-3">
+
+    <!-- Hero Carousel -->
+    <div id="heroCarousel" class="carousel slide hero-carousel mb-4" data-bs-ride="carousel" data-bs-interval="4500">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+            
+            <!-- Slide 1: Electronics -->
+            <div class="carousel-item active">
+                <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=1600&auto=format&fit=crop&q=80');">
+                    <div class="hero-overlay"></div>
+                    <div class="hero-content">
+                        <span class="badge bg-warning text-dark px-3 py-2 fw-bold text-uppercase mb-2">Mega Electronics Fest</span>
+                        <h1 class="display-5 fw-bold mb-3">Next-Gen Audio & Smart Tech</h1>
+                        <p class="lead mb-4 text-white-50">Immerse yourself in industry-leading noise cancellation, crystal-clear sound, and ultra-fast computing.</p>
+                        <div class="d-flex gap-3">
+                            <a href="{% url 'products:product_list' %}" class="btn btn-warning btn-lg fw-bold px-4">Shop Deals Now</a>
+                            <a href="{% url 'products:category_products' 'electronics-gadgets' %}" class="btn btn-outline-light btn-lg px-4">Explore Audio</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Fashion -->
+            <div class="carousel-item">
+                <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1600&auto=format&fit=crop&q=80');">
+                    <div class="hero-overlay"></div>
+                    <div class="hero-content">
+                        <span class="badge bg-primary px-3 py-2 fw-bold text-uppercase mb-2">Trendsetter Collection</span>
+                        <h1 class="display-5 fw-bold mb-3">Fresh Wardrobe Essentials</h1>
+                        <p class="lead mb-4 text-white-50">Discover iconic brands, premium denim, responsive sportswear, and timeless accessories.</p>
+                        <div class="d-flex gap-3">
+                            <a href="{% url 'products:category_products' 'fashion-apparel' %}" class="btn btn-primary btn-lg fw-bold px-4">Shop Fashion</a>
+                            <a href="{% url 'products:product_list' %}?sort=price_asc" class="btn btn-outline-light btn-lg px-4">View Clearance</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Home & Living -->
+            <div class="carousel-item">
+                <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=1600&auto=format&fit=crop&q=80');">
+                    <div class="hero-overlay"></div>
+                    <div class="hero-content">
+                        <span class="badge bg-success px-3 py-2 fw-bold text-uppercase mb-2">Modern Living</span>
+                        <h1 class="display-5 fw-bold mb-3">Smart Kitchen & Appliances</h1>
+                        <p class="lead mb-4 text-white-50">Cook healthy, upgrade your everyday cooking experience with smart digital air fryers and appliances.</p>
+                        <div class="d-flex gap-3">
+                            <a href="{% url 'products:category_products' 'home-kitchen' %}" class="btn btn-success btn-lg fw-bold px-4">Explore Kitchen</a>
+                            <a href="{% url 'products:product_list' %}" class="btn btn-outline-light btn-lg px-4">All Products</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <!-- Features & Assurance Strip -->
+    <div class="row g-3 mb-5">
+        <div class="col-6 col-md-3">
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-0 text-dark">Free Delivery</h6>
+                    <small class="text-muted">On orders over ₹499</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="feature-card">
+                <div class="feature-icon-wrapper text-success bg-success bg-opacity-10">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-0 text-dark">100% Genuine</h6>
+                    <small class="text-muted">Verified top sellers</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="feature-card">
+                <div class="feature-icon-wrapper text-warning bg-warning bg-opacity-10">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-0 text-dark">7-Day Return</h6>
+                    <small class="text-muted">Hassle-free refunds</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="feature-card">
+                <div class="feature-icon-wrapper text-info bg-info bg-opacity-10">
+                    <i class="bi bi-headset"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-0 text-dark">24/7 Support</h6>
+                    <small class="text-muted">Dedicated assistance</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shop by Category Section -->
+    <div class="mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <h3 class="fw-bold mb-1">Shop by Category</h3>
+                <p class="text-muted mb-0">Browse through our most popular curated departments</p>
+            </div>
+            <a href="{% url 'products:product_list' %}" class="btn btn-outline-primary btn-sm fw-semibold">
+                View All Categories <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+            {% for cat in featured_categories %}
+            <div class="col">
+                <a href="{% url 'products:category_products' cat.slug %}" class="category-card">
+                    <div class="category-icon">
+                        <i class="bi {{ cat.icon|default:'bi-tag' }}"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1 text-center">{{ cat.name }}</h6>
+                    <small class="text-muted text-center">{{ cat.products.count }} Products</small>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Today's Top Deals & Discounts -->
+    <div class="mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-danger p-2 fs-6"><i class="bi bi-fire me-1"></i>Deals of the Day</span>
+                <span class="text-muted d-none d-sm-inline">Save big on bestselling items today</span>
+            </div>
+            <a href="{% url 'products:product_list' %}?sort=price_asc" class="text-primary text-decoration-none fw-semibold">
+                See all deals <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for product in deal_products %}
+            <div class="col">
+                <div class="product-card">
+                    {% if product.discount_percentage > 0 %}
+                        <span class="product-badge-discount">{{ product.discount_percentage }}% OFF</span>
+                    {% endif %}
+                    {% if product.is_featured %}
+                        <span class="product-badge-featured"><i class="bi bi-star-fill me-1"></i>Featured</span>
+                    {% endif %}
+
+                    <a href="{{ product.get_absolute_url }}" class="product-card-img-wrapper">
+                        <img src="{{ product.display_image }}" alt="{{ product.name }}" class="product-card-img" loading="lazy">
+                    </a>
+
+                    <div class="product-card-body">
+                        <span class="product-category-meta">{{ product.category.name }}</span>
+                        <a href="{{ product.get_absolute_url }}" class="product-title" title="{{ product.name }}">
+                            {{ product.name }}
+                        </a>
+
+                        <div class="product-rating">
+                            <i class="bi bi-star-fill"></i>
+                            <span class="fw-bold text-dark">{{ product.rating }}</span>
+                            <span class="text-muted">({{ product.num_reviews }})</span>
+                        </div>
+
+                        <div class="product-price-block">
+                            <span class="product-current-price">₹{{ product.current_price|floatformat:2 }}</span>
+                            {% if product.discount_price %}
+                                <span class="product-original-price">₹{{ product.price|floatformat:2 }}</span>
+                                <span class="product-save-text">Save ₹{{ product.savings|floatformat:0 }}</span>
+                            {% endif %}
+                        </div>
+
+                        {% if product.in_stock %}
+                            <button type="button" 
+                                    class="btn btn-add-to-cart ajax-add-to-cart" 
+                                    data-url="{% url 'cart:cart_add' product.id %}">
+                                <i class="bi bi-cart-plus me-1"></i>Add to Cart
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-secondary w-100 disabled" disabled>Out of Stock</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Mid Promotional Banner -->
+    <div class="card border-0 rounded-4 overflow-hidden shadow-sm mb-5" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+        <div class="card-body p-4 p-md-5 text-white">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <span class="badge bg-warning text-dark px-3 py-2 fw-bold text-uppercase mb-2">Prime Shopping Experience</span>
+                    <h2 class="display-6 fw-bold mb-3">Upgrade Your Lifestyle with Free Express Delivery</h2>
+                    <p class="lead text-white-50 mb-4">Enjoy hassle-free checkout, Cash on Delivery option, safe payment simulation, and verified customer reviews.</p>
+                    <a href="{% url 'products:product_list' %}" class="btn btn-warning btn-lg fw-bold px-4">
+                        <i class="bi bi-bag-check me-2"></i>Explore Full Catalog
+                    </a>
+                </div>
+                <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                    <i class="bi bi-shield-lock-fill display-1 text-warning opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Best Sellers Section -->
+    <div class="mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <h3 class="fw-bold mb-1">Customer Favorites & Best Sellers</h3>
+                <p class="text-muted mb-0">Our most requested and highest rated items</p>
+            </div>
+            <a href="{% url 'products:product_list' %}?sort=rating" class="text-primary text-decoration-none fw-semibold">
+                Explore Best Sellers <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for product in featured_products %}
+            <div class="col">
+                <div class="product-card">
+                    {% if product.discount_percentage > 0 %}
+                        <span class="product-badge-discount">{{ product.discount_percentage }}% OFF</span>
+                    {% endif %}
+
+                    <a href="{{ product.get_absolute_url }}" class="product-card-img-wrapper">
+                        <img src="{{ product.display_image }}" alt="{{ product.name }}" class="product-card-img" loading="lazy">
+                    </a>
+
+                    <div class="product-card-body">
+                        <span class="product-category-meta">{{ product.category.name }}</span>
+                        <a href="{{ product.get_absolute_url }}" class="product-title" title="{{ product.name }}">
+                            {{ product.name }}
+                        </a>
+
+                        <div class="product-rating">
+                            <i class="bi bi-star-fill"></i>
+                            <span class="fw-bold text-dark">{{ product.rating }}</span>
+                            <span class="text-muted">({{ product.num_reviews }})</span>
+                        </div>
+
+                        <div class="product-price-block">
+                            <span class="product-current-price">₹{{ product.current_price|floatformat:2 }}</span>
+                            {% if product.discount_price %}
+                                <span class="product-original-price">₹{{ product.price|floatformat:2 }}</span>
+                            {% endif %}
+                        </div>
+
+                        {% if product.in_stock %}
+                            <button type="button" 
+                                    class="btn btn-add-to-cart ajax-add-to-cart" 
+                                    data-url="{% url 'cart:cart_add' product.id %}">
+                                <i class="bi bi-cart-plus me-1"></i>Add to Cart
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-secondary w-100 disabled" disabled>Out of Stock</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

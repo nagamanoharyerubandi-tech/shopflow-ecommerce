@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Customer Directory | ShopFlow Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="fw-bold mb-0"><i class="bi bi-people me-2 text-primary"></i>Customer Directory</h2>
+            <small class="text-muted">Registered shoppers, contact records, order history and lifetime value</small>
+        </div>
+        <a href="{% url 'admin_dashboard:home' %}" class="btn btn-outline-secondary btn-sm">
+            &larr; Dashboard
+        </a>
+    </div>
+
+    <!-- Customers Table -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Customer</th>
+                            <th>Username</th>
+                            <th>Email Address</th>
+                            <th>Mobile Phone</th>
+                            <th>Total Orders</th>
+                            <th>Total Spent</th>
+                            <th>Date Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in customers %}
+                        <tr>
+                            <td class="ps-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px;">
+                                        {{ c.first_name|default:c.username|slice:":1"|upper }}
+                                    </div>
+                                    <div>
+                                        <strong class="d-block text-dark">{{ c.get_full_name|default:c.username }}</strong>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><code>{{ c.username }}</code></td>
+                            <td>{{ c.email }}</td>
+                            <td>{{ c.profile.phone|default:"-" }}</td>
+                            <td>
+                                <span class="badge bg-primary bg-opacity-10 text-primary fs-6">
+                                    {{ c.total_orders|default:0 }} orders
+                                </span>
+                            </td>
+                            <td class="fw-bold text-dark">
+                                ₹{{ c.total_spent|default:0|floatformat:2 }}
+                            </td>
+                            <td class="small text-muted">{{ c.date_joined|date:"d M Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">No registered customers yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sign In | ShopFlow{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5 col-xl-4">
+            
+            <!-- Auth Card -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+                
+                <div class="text-center mb-4">
+                    <a href="{% url 'products:home' %}" class="brand-logo justify-content-center text-dark text-decoration-none">
+                        <i class="bi bi-cart3 fs-2 text-warning"></i>
+                        <span class="fs-3 fw-bold text-dark">Shop<span class="text-warning">Flow</span></span>
+                    </a>
+                    <h4 class="fw-bold mt-3 mb-1">Sign In</h4>
+                    <p class="text-muted small">Access your orders, wishlist, and recommendations</p>
+                </div>
+
+                <form method="POST" action="{% url 'accounts:login' %}{% if next %}?next={{ next }}{% endif %}">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger py-2 small">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Username or Email</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label small fw-bold mb-0">Password</label>
+                            <a href="{% url 'accounts:forgot_password' %}" class="small text-primary text-decoration-none">Forgot Password?</a>
+                        </div>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-warning w-100 fw-bold py-2 mb-3 shadow-sm">
+                        Sign In
+                    </button>
+
+                    <div class="text-center small text-muted mb-3">
+                        By continuing, you agree to ShopFlow's <a href="#" class="text-decoration-none">Conditions of Use</a> and <a href="#" class="text-decoration-none">Privacy Notice</a>.
+                    </div>
+                </form>
+
+                <div class="position-relative text-center my-3">
+                    <hr class="text-muted">
+                    <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-muted">New to ShopFlow?</span>
+                </div>
+
+                <a href="{% url 'accounts:register' %}" class="btn btn-outline-secondary w-100 fw-semibold py-2">
+                    Create your ShopFlow Account
+                </a>
+
+                <!-- Demo Accounts Helper Box -->
+                <div class="card bg-light border-0 p-3 mt-4">
+                    <small class="fw-bold text-muted mb-2 d-block"><i class="bi bi-info-circle me-1 text-primary"></i>Demo Test Accounts:</small>
+                    <div class="small text-secondary mb-1">
+                        <strong>Customer:</strong> <code>krish</code> / <code>password123</code>
+                    </div>
+                    <div class="small text-secondary">
+                        <strong>Store Admin:</strong> <code>admin</code> / <code>admin123</code>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Invoice - #{{ order.order_number }}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .invoice-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 850px;
+        }
+        @media print {
+            body {
+                background-color: #ffffff;
+            }
+            .invoice-card {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-between align-items-center max-w-850 mx-auto mt-4 no-print" style="max-width: 850px;">
+            <a href="{% url 'orders:order_detail' order.order_number %}" class="btn btn-outline-secondary btn-sm">
+                &larr; Back to Order Details
+            </a>
+            <button onclick="window.print()" class="btn btn-primary btn-sm fw-semibold">
+                Print / Save as PDF
+            </button>
+        </div>
+
+        <!-- Invoice Container -->
+        <div class="invoice-card">
+            
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-start border-bottom pb-4 mb-4">
+                <div>
+                    <h2 class="fw-bold text-primary mb-1">ShopFlow Inc.</h2>
+                    <p class="text-muted small mb-0">E-Commerce Retail Services & Logistics</p>
+                    <p class="text-muted small mb-0">GSTIN: 29AABCU9603R1ZM | support@shopflow.com</p>
+                </div>
+                <div class="text-end">
+                    <h4 class="fw-bold mb-1">RETAIL INVOICE</h4>
+                    <span class="badge bg-secondary mb-1">Invoice / Cash Receipt</span>
+                    <p class="text-muted small mb-0"><strong>Invoice No:</strong> INV-{{ order.order_number }}</p>
+                    <p class="text-muted small mb-0"><strong>Date:</strong> {{ order.created_at|date:"d M Y" }}</p>
+                </div>
+            </div>
+
+            <!-- Bill To & Ship To -->
+            <div class="row g-4 mb-4">
+                <div class="col-6">
+                    <h6 class="fw-bold text-uppercase text-muted small mb-2">Billed & Shipped To:</h6>
+                    <h6 class="fw-bold mb-1">{{ order.full_name }}</h6>
+                    <p class="small text-muted mb-1">{{ order.address_line_1 }}</p>
+                    {% if order.address_line_2 %}
+                        <p class="small text-muted mb-1">{{ order.address_line_2 }}</p>
+                    {% endif %}
+                    <p class="small text-muted mb-1">{{ order.city }}, {{ order.state }} - {{ order.postal_code }}</p>
+                    <p class="small text-muted mb-1">{{ order.country }}</p>
+                    <p class="small text-muted mb-0"><strong>Phone:</strong> {{ order.phone }}</p>
+                </div>
+
+                <div class="col-6 text-end">
+                    <h6 class="fw-bold text-uppercase text-muted small mb-2">Order Summary:</h6>
+                    <p class="small mb-1"><strong>Order ID:</strong> {{ order.order_number }}</p>
+                    <p class="small mb-1"><strong>Payment Method:</strong> {{ order.get_payment_method_display }}</p>
+                    <p class="small mb-1"><strong>Payment Status:</strong> {{ order.payment_status }}</p>
+                    {% if order.payment_id %}
+                        <p class="small mb-1"><strong>Transaction ID:</strong> {{ order.payment_id }}</p>
+                    {% endif %}
+                    {% if order.tracking_number %}
+                        <p class="small mb-0"><strong>Courier Tracking:</strong> {{ order.tracking_number }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Table of Line Items -->
+            <table class="table table-bordered mb-4">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 5%;">#</th>
+                        <th>Item Description</th>
+                        <th class="text-center" style="width: 12%;">Qty</th>
+                        <th class="text-end" style="width: 18%;">Unit Price</th>
+                        <th class="text-end" style="width: 20%;">Total (INR)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <strong>{{ item.product_name }}</strong>
+                        </td>
+                        <td class="text-center">{{ item.quantity }}</td>
+                        <td class="text-end">₹{{ item.price|floatformat:2 }}</td>
+                        <td class="text-end">₹{{ item.total_price|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-end fw-semibold">Subtotal:</td>
+                        <td class="text-end">₹{{ order.subtotal|floatformat:2 }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-end fw-semibold">Delivery / Shipping:</td>
+                        <td class="text-end text-success">
+                            {% if order.shipping_fee == 0 %}FREE{% else %}₹{{ order.shipping_fee|floatformat:2 }}{% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-end fw-semibold">Taxes (GST 5%):</td>
+                        <td class="text-end">₹{{ order.tax|floatformat:2 }}</td>
+                    </tr>
+                    {% if order.discount > 0 %}
+                    <tr>
+                        <td colspan="4" class="text-end fw-semibold text-success">Promotional Discount:</td>
+                        <td class="text-end text-success">- ₹{{ order.discount|floatformat:2 }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr class="table-light">
+                        <td colspan="4" class="text-end fw-bold fs-5">Grand Total:</td>
+                        <td class="text-end fw-bold fs-5 text-primary">₹{{ order.grand_total|floatformat:2 }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <!-- Footer notes -->
+            <div class="border-top pt-3 text-muted small">
+                <p class="mb-1"><strong>Terms & Conditions:</strong> This is a computer-generated tax invoice and does not require a physical signature. Goods once sold are covered under 7-day return policy.</p>
+                <p class="mb-0 text-center mt-3">Thank you for shopping with ShopFlow!</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

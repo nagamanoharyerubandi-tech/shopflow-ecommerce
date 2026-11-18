@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Customer Orders | ShopFlow Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="fw-bold mb-0"><i class="bi bi-receipt me-2 text-primary"></i>Customer Orders Management</h2>
+            <small class="text-muted">Track order progress, update shipment statuses, and fulfill deliveries</small>
+        </div>
+        <a href="{% url 'admin_dashboard:home' %}" class="btn btn-outline-secondary btn-sm">
+            &larr; Dashboard
+        </a>
+    </div>
+
+    <!-- Filter Pills & Search -->
+    <div class="card border-0 shadow-sm rounded-3 p-3 mb-4">
+        <div class="row align-items-center gy-2">
+            <div class="col-md-7">
+                <div class="d-flex gap-2 overflow-x-auto text-nowrap pb-1">
+                    <a href="{% url 'admin_dashboard:order_list' %}?status=all" class="btn btn-sm {% if status_filter == 'all' %}btn-dark{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+                        All Orders
+                    </a>
+                    <a href="{% url 'admin_dashboard:order_list' %}?status=Pending" class="btn btn-sm {% if status_filter == 'Pending' %}btn-warning text-dark{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+                        Pending
+                    </a>
+                    <a href="{% url 'admin_dashboard:order_list' %}?status=Processing" class="btn btn-sm {% if status_filter == 'Processing' %}btn-info text-dark{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+                        Processing
+                    </a>
+                    <a href="{% url 'admin_dashboard:order_list' %}?status=Shipped" class="btn btn-sm {% if status_filter == 'Shipped' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+                        Shipped
+                    </a>
+                    <a href="{% url 'admin_dashboard:order_list' %}?status=Delivered" class="btn btn-sm {% if status_filter == 'Delivered' %}btn-success{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+                        Delivered
+                    </a>
+                    <a href="{% url 'admin_dashboard:order_list' %}?status=Cancelled" class="btn btn-sm {% if status_filter == 'Cancelled' %}btn-danger{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+                        Cancelled
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <form method="GET" class="input-group input-group-sm">
+                    {% if status_filter != 'all' %}<input type="hidden" name="status" value="{{ status_filter }}">{% endif %}
+                    <input type="text" name="q" class="form-control" placeholder="Search order #, customer name, phone..." value="{{ search_q }}">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                    {% if search_q %}
+                        <a href="{% url 'admin_dashboard:order_list' %}" class="btn btn-outline-secondary">Reset</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Order Number</th>
+                            <th>Customer Name</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Payment Method</th>
+                            <th>Payment Status</th>
+                            <th>Order Status</th>
+                            <th class="text-end pe-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td class="ps-3">
+                                <a href="{% url 'admin_dashboard:order_detail' order.order_number %}" class="fw-bold text-decoration-none text-primary">
+                                    {{ order.order_number }}
+                                </a>
+                                <small class="text-muted d-block">{{ order.items.count }} item(s)</small>
+                            </td>
+                            <td>
+                                <strong class="d-block text-dark small">{{ order.full_name }}</strong>
+                                <small class="text-muted"><i class="bi bi-telephone me-1"></i>{{ order.phone }}</small>
+                            </td>
+                            <td class="small">{{ order.created_at|date:"d M Y, h:i A" }}</td>
+                            <td class="fw-bold">₹{{ order.grand_total|floatformat:2 }}</td>
+                            <td class="small">{{ order.get_payment_method_display }}</td>
+                            <td>
+                                <span class="badge {{ order.payment_badge_class }} small">{{ order.payment_status }}</span>
+                            </td>
+                            <td>
+                                <span class="badge {{ order.status_badge_class }} small">{{ order.status }}</span>
+                            </td>
+                            <td class="text-end pe-3">
+                                <a href="{% url 'admin_dashboard:order_detail' order.order_number %}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-pencil-square me-1"></i>Update
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">No orders found matching the filter criteria.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if orders.has_other_pages %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if orders.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ orders.previous_page_number }}">Previous</a></li>
+            {% endif %}
+            <li class="page-item active"><span class="page-link">{{ orders.number }} of {{ orders.paginator.num_pages }}</span></li>
+            {% if orders.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ orders.next_page_number }}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+</div>
+{% endblock %}

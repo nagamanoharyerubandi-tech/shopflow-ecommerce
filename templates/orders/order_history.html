@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Orders | ShopFlow{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="fw-bold mb-0"><i class="bi bi-box-seam me-2 text-primary"></i>Your Orders</h2>
+            <p class="text-muted mb-0">Track shipments, view invoices, or re-order past purchases</p>
+        </div>
+        <a href="{% url 'products:home' %}" class="btn btn-outline-primary btn-sm fw-semibold">
+            <i class="bi bi-bag-plus me-1"></i>Continue Shopping
+        </a>
+    </div>
+
+    <!-- Status Filter Pills -->
+    <div class="d-flex gap-2 overflow-x-auto text-nowrap pb-2 mb-4">
+        <a href="{% url 'orders:order_history' %}?status=all" class="btn btn-sm {% if status_filter == 'all' %}btn-dark{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+            All Orders
+        </a>
+        <a href="{% url 'orders:order_history' %}?status=Pending" class="btn btn-sm {% if status_filter == 'Pending' %}btn-warning text-dark{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+            Pending
+        </a>
+        <a href="{% url 'orders:order_history' %}?status=Processing" class="btn btn-sm {% if status_filter == 'Processing' %}btn-info text-dark{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+            Processing
+        </a>
+        <a href="{% url 'orders:order_history' %}?status=Shipped" class="btn btn-sm {% if status_filter == 'Shipped' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+            Shipped
+        </a>
+        <a href="{% url 'orders:order_history' %}?status=Delivered" class="btn btn-sm {% if status_filter == 'Delivered' %}btn-success{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+            Delivered
+        </a>
+        <a href="{% url 'orders:order_history' %}?status=Cancelled" class="btn btn-sm {% if status_filter == 'Cancelled' %}btn-danger{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+            Cancelled
+        </a>
+    </div>
+
+    <!-- Orders Cards List -->
+    {% if orders %}
+        <div class="d-flex flex-column gap-4">
+            {% for order in orders %}
+            <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                
+                <!-- Card Header (Order Meta) -->
+                <div class="card-header bg-light border-bottom p-3">
+                    <div class="row align-items-center gy-2">
+                        <div class="col-6 col-md-3">
+                            <span class="text-muted small d-block">Order Placed</span>
+                            <span class="fw-semibold small">{{ order.created_at|date:"d M Y" }}</span>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <span class="text-muted small d-block">Total Amount</span>
+                            <span class="fw-bold small text-dark">₹{{ order.grand_total|floatformat:2 }}</span>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <span class="text-muted small d-block">Ship To</span>
+                            <span class="fw-semibold small text-primary">{{ order.full_name }}</span>
+                        </div>
+                        <div class="col-6 col-md-4 text-md-end">
+                            <span class="text-muted small d-block">Order # {{ order.order_number }}</span>
+                            <div class="d-flex justify-content-md-end gap-2 mt-1">
+                                <a href="{% url 'orders:order_detail' order.order_number %}" class="small text-primary text-decoration-none fw-semibold">View Details</a>
+                                <span class="text-muted small">|</span>
+                                <a href="{% url 'orders:order_invoice' order.order_number %}" target="_blank" class="small text-secondary text-decoration-none">Invoice</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge {{ order.status_badge_class }} fs-6 py-2 px-3">
+                                <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>{{ order.status }}
+                            </span>
+                            <span class="text-muted small">
+                                {% if order.status == 'Delivered' %}
+                                    Delivered on {{ order.updated_at|date:"d M Y" }}
+                                {% elif order.status == 'Cancelled' %}
+                                    Cancelled on {{ order.updated_at|date:"d M Y" }}
+                                {% else %}
+                                    Estimated Delivery: <strong>{{ order.estimated_delivery|date:"d M Y" }}</strong>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <span class="badge bg-light text-dark border">{{ order.get_payment_method_display }}</span>
+                    </div>
+
+                    <!-- Items rows -->
+                    <div class="d-flex flex-column gap-3">
+                        {% for item in order.items.all %}
+                        <div class="d-flex align-items-center gap-3">
+                            {% if item.product_image %}
+                                <img src="{{ item.product_image }}" alt="{{ item.product_name }}" style="width: 64px; height: 64px; object-fit: cover; border-radius: 8px;" class="border">
+                            {% endif %}
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    {% if item.product %}
+                                        <a href="{{ item.product.get_absolute_url }}" class="text-dark text-decoration-none fw-semibold">
+                                            {{ item.product_name }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-dark fw-semibold">{{ item.product_name }}</span>
+                                    {% endif %}
+                                </h6>
+                                <small class="text-muted">Quantity: {{ item.quantity }} | Price: ₹{{ item.price|floatformat:2 }}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="fw-bold">₹{{ item.total_price|floatformat:2 }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Footer Buttons -->
+                    <div class="border-top pt-3 mt-3 d-flex justify-content-end gap-2">
+                        <a href="{% url 'orders:order_detail' order.order_number %}" class="btn btn-outline-primary btn-sm fw-semibold">
+                            <i class="bi bi-eye me-1"></i>Track & View Details
+                        </a>
+                        {% if order.can_cancel %}
+                            <a href="{% url 'orders:order_detail' order.order_number %}#cancel-section" class="btn btn-outline-danger btn-sm">
+                                Cancel Order
+                            </a>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Empty Orders State -->
+        <div class="card border-0 shadow-sm rounded-4 text-center py-5 my-4">
+            <div class="card-body">
+                <i class="bi bi-box-seam display-1 text-muted opacity-50 mb-3"></i>
+                <h4 class="fw-bold mb-2">No Orders Found</h4>
+                <p class="text-muted mb-4">You haven't placed any orders in this category yet.</p>
+                <a href="{% url 'products:home' %}" class="btn btn-primary px-4 fw-semibold">
+                    <i class="bi bi-bag-plus me-1"></i>Start Shopping
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

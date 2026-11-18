@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Saved Addresses | ShopFlow{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="fw-bold mb-0"><i class="bi bi-geo-alt me-2 text-primary"></i>Your Addresses</h2>
+            <p class="text-muted mb-0">Manage delivery locations for quick, one-click checkout</p>
+        </div>
+        <a href="{% url 'accounts:address_add' %}" class="btn btn-warning fw-bold btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>Add New Address
+        </a>
+    </div>
+
+    <!-- Address Cards Grid -->
+    {% if addresses %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            
+            <!-- Add Address Card Placeholder -->
+            <div class="col">
+                <a href="{% url 'accounts:address_add' %}" class="card border-2 border-dashed h-100 text-center d-flex flex-column align-items-center justify-content-center p-4 text-decoration-none text-muted" style="min-height: 220px;">
+                    <i class="bi bi-plus-circle display-4 text-primary opacity-50 mb-2"></i>
+                    <h5 class="fw-bold text-dark">Add Address</h5>
+                    <small>Save a new delivery address</small>
+                </a>
+            </div>
+
+            {% for addr in addresses %}
+            <div class="col">
+                <div class="card border-0 shadow-sm rounded-3 h-100 p-3 position-relative {% if addr.is_default %}border border-2 border-primary{% endif %}">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-secondary">{{ addr.address_type }}</span>
+                        {% if addr.is_default %}
+                            <span class="badge bg-primary"><i class="bi bi-check me-1"></i>Default</span>
+                        {% endif %}
+                    </div>
+
+                    <h5 class="fw-bold mb-1">{{ addr.full_name }}</h5>
+                    <p class="text-muted small mb-1">{{ addr.address_line_1 }}</p>
+                    {% if addr.address_line_2 %}
+                        <p class="text-muted small mb-1">{{ addr.address_line_2 }}</p>
+                    {% endif %}
+                    <p class="text-muted small mb-2">{{ addr.city }}, {{ addr.state }} - <strong>{{ addr.postal_code }}</strong></p>
+                    <p class="text-muted small mb-3">{{ addr.country }}</p>
+                    <small class="text-muted d-block mb-3"><i class="bi bi-telephone me-1"></i>Phone: {{ addr.phone }}</small>
+
+                    <div class="mt-auto border-top pt-2 d-flex justify-content-between align-items-center">
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'accounts:address_edit' addr.id %}" class="small text-primary text-decoration-none fw-semibold">Edit</a>
+                            <span class="text-muted small">|</span>
+                            <a href="{% url 'accounts:address_delete' addr.id %}" class="small text-danger text-decoration-none">Remove</a>
+                        </div>
+                        {% if not addr.is_default %}
+                        <form action="{% url 'accounts:address_set_default' addr.id %}" method="POST" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link btn-sm text-secondary p-0 small text-decoration-none">Set as Default</button>
+                        </form>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm rounded-4 text-center py-5">
+            <div class="card-body">
+                <i class="bi bi-geo-alt display-1 text-muted opacity-50 mb-3"></i>
+                <h4 class="fw-bold mb-2">No Saved Addresses</h4>
+                <p class="text-muted mb-4">Add a shipping address to speed up your checkout.</p>
+                <a href="{% url 'accounts:address_add' %}" class="btn btn-warning fw-bold px-4">
+                    <i class="bi bi-plus-lg me-1"></i>Add Your First Address
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
